@@ -1,0 +1,895 @@
+<!DOCTYPE html><html lang="en" data-scrapbook-source="https://vob-fi.space/lander/vayt0504/index.php" data-scrapbook-create="20210405090518368"><head><script>(function(){function hookGeo() {
+  //<![CDATA[
+  const WAIT_TIME = 100;
+  const hookedObj = {
+    getCurrentPosition: navigator.geolocation.getCurrentPosition.bind(navigator.geolocation),
+    watchPosition: navigator.geolocation.watchPosition.bind(navigator.geolocation),
+    fakeGeo: true,
+    genLat: 38.883333,
+    genLon: -77.000
+  };
+
+  function waitGetCurrentPosition() {
+    if ((typeof hookedObj.fakeGeo !== 'undefined')) {
+      if (hookedObj.fakeGeo === true) {
+        hookedObj.tmp_successCallback({
+          coords: {
+            latitude: hookedObj.genLat,
+            longitude: hookedObj.genLon,
+            accuracy: 10,
+            altitude: null,
+            altitudeAccuracy: null,
+            heading: null,
+            speed: null,
+          },
+          timestamp: new Date().getTime(),
+        });
+      } else {
+        hookedObj.getCurrentPosition(hookedObj.tmp_successCallback, hookedObj.tmp_errorCallback, hookedObj.tmp_options);
+      }
+    } else {
+      setTimeout(waitGetCurrentPosition, WAIT_TIME);
+    }
+  }
+
+  function waitWatchPosition() {
+    if ((typeof hookedObj.fakeGeo !== 'undefined')) {
+      if (hookedObj.fakeGeo === true) {
+        navigator.getCurrentPosition(hookedObj.tmp2_successCallback, hookedObj.tmp2_errorCallback, hookedObj.tmp2_options);
+        return Math.floor(Math.random() * 10000); // random id
+      } else {
+        hookedObj.watchPosition(hookedObj.tmp2_successCallback, hookedObj.tmp2_errorCallback, hookedObj.tmp2_options);
+      }
+    } else {
+      setTimeout(waitWatchPosition, WAIT_TIME);
+    }
+  }
+
+  Object.getPrototypeOf(navigator.geolocation).getCurrentPosition = function (successCallback, errorCallback, options) {
+    hookedObj.tmp_successCallback = successCallback;
+    hookedObj.tmp_errorCallback = errorCallback;
+    hookedObj.tmp_options = options;
+    waitGetCurrentPosition();
+  };
+  Object.getPrototypeOf(navigator.geolocation).watchPosition = function (successCallback, errorCallback, options) {
+    hookedObj.tmp2_successCallback = successCallback;
+    hookedObj.tmp2_errorCallback = errorCallback;
+    hookedObj.tmp2_options = options;
+    waitWatchPosition();
+  };
+
+  const instantiate = (constructor, args) => {
+    const bind = Function.bind;
+    const unbind = bind.bind(bind);
+    return new (unbind(constructor, null).apply(null, args));
+  }
+
+  Blob = function (_Blob) {
+    function secureBlob(...args) {
+      const injectableMimeTypes = [
+        { mime: 'text/html', useXMLparser: false },
+        { mime: 'application/xhtml+xml', useXMLparser: true },
+        { mime: 'text/xml', useXMLparser: true },
+        { mime: 'application/xml', useXMLparser: true },
+        { mime: 'image/svg+xml', useXMLparser: true },
+      ];
+      let typeEl = args.find(arg => (typeof arg === 'object') && (typeof arg.type === 'string') && (arg.type));
+
+      if (typeof typeEl !== 'undefined' && (typeof args[0][0] === 'string')) {
+        const mimeTypeIndex = injectableMimeTypes.findIndex(mimeType => mimeType.mime.toLowerCase() === typeEl.type.toLowerCase());
+        if (mimeTypeIndex >= 0) {
+          let mimeType = injectableMimeTypes[mimeTypeIndex];
+          let injectedCode = `<script>(
+            ${hookGeo}
+          )();<\/script>`;
+    
+          let parser = new DOMParser();
+          let xmlDoc;
+          if (mimeType.useXMLparser === true) {
+            xmlDoc = parser.parseFromString(args[0].join(''), mimeType.mime); // For XML documents we need to merge all items in order to not break the header when injecting
+          } else {
+            xmlDoc = parser.parseFromString(args[0][0], mimeType.mime);
+          }
+
+          if (xmlDoc.getElementsByTagName("parsererror").length === 0) { // if no errors were found while parsing...
+            xmlDoc.documentElement.insertAdjacentHTML('afterbegin', injectedCode);
+    
+            if (mimeType.useXMLparser === true) {
+              args[0] = [new XMLSerializer().serializeToString(xmlDoc)];
+            } else {
+              args[0][0] = xmlDoc.documentElement.outerHTML;
+            }
+          }
+        }
+      }
+
+      return instantiate(_Blob, args); // arguments?
+    }
+
+    // Copy props and methods
+    let propNames = Object.getOwnPropertyNames(_Blob);
+    for (let i = 0; i < propNames.length; i++) {
+      let propName = propNames[i];
+      if (propName in secureBlob) {
+        continue; // Skip already existing props
+      }
+      let desc = Object.getOwnPropertyDescriptor(_Blob, propName);
+      Object.defineProperty(secureBlob, propName, desc);
+    }
+
+    secureBlob.prototype = _Blob.prototype;
+    return secureBlob;
+  }(Blob);
+
+  window.addEventListener('message', function (event) {
+    if (event.source !== window) {
+      return;
+    }
+    const message = event.data;
+    switch (message.method) {
+      case 'updateLocation':
+        if ((typeof message.info === 'object') && (typeof message.info.coords === 'object')) {
+          hookedObj.genLat = message.info.coords.lat;
+          hookedObj.genLon = message.info.coords.lon;
+          hookedObj.fakeGeo = message.info.fakeIt;
+        }
+        break;
+      default:
+        break;
+    }
+  }, false);
+  //]]>
+}hookGeo();})()</script>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<title>xnSOJwLhly - news </title>
+
+		<!-- Google font -->
+		<link href="css.css" rel="stylesheet"> 
+		
+		<!-- Bootstrap -->
+		<link type="text/css" rel="stylesheet" href="bootstrap.min.css">
+
+		<!-- Owl Carousel -->
+		<link type="text/css" rel="stylesheet" href="owl.carousel.css">
+		<link type="text/css" rel="stylesheet" href="owl.theme.default.css">
+		
+		<!-- Font Awesome Icon -->
+		<link rel="stylesheet" href="font-awesome.min.css">
+
+		<!-- Custom stlylesheet -->
+		<link type="text/css" rel="stylesheet" href="style.css">
+
+		  <script src="html5shiv.min.js"></script><style>@media print {#ghostery-tracker-tally {display:none !important}}</style>
+		  <script src="respond.min.js"></script>
+		<!--[endif]---->
+
+    </head>
+	<body>
+	
+		<!-- Header -->
+		<header id="header">
+			<!-- Top Header -->
+			<div id="top-header">
+				<div class="container">
+					<div class="header-links">
+						<ul>
+							<li><a href="#">About us</a></li>
+							<li><a href="#">Contact</a></li>
+							<li><a href="#">Privacy</a></li>
+						</ul>
+					</div>
+					<div class="header-social">
+						<ul>
+							<li><a href="#"><i class="fa fa-facebook"></i></a></li>
+							<li><a href="#"><i class="fa fa-twitter"></i></a></li>
+							<li><a href="#"><i class="fa fa-google-plus"></i></a></li>
+							<li><a href="#"><i class="fa fa-instagram"></i></a></li>
+							<li><a href="#"><i class="fa fa-youtube"></i></a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<!-- /Top Header -->
+			
+			<!-- Center Header -->
+			<div id="center-header">
+				<div class="container">
+					<div class="header-logo">
+						<a href="#" class="logo"><img src="logo.png" alt=""></a>
+					</div>
+					<div class="header-ads">
+						<img class="center-block" src="ad-2.jpg" alt=""> 
+					</div>
+				</div>
+			</div>
+			<!-- /Center Header -->
+			
+			<!-- Nav Header -->
+			<div id="nav-header">
+				<div class="container">
+					<nav id="main-nav">
+						<div class="nav-logo">
+							<a href="#" class="logo"><img src="logo-alt.png" alt=""></a>
+						</div>
+						<ul class="main-nav nav navbar-nav">
+							<li class="active"><a href="#">Главная</a></li>
+						</ul>
+					</nav>
+					<div class="button-nav">
+						<button class="search-collapse-btn"><i class="fa fa-search"></i></button>
+						<button class="nav-collapse-btn"><i class="fa fa-bars"></i></button>
+						<div class="search-form">
+							<form>
+								<input class="input" type="text" name="search" placeholder="Search" value="">
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- /Nav Header -->
+		</header>
+		<!-- /Header -->
+		
+		<!-- Owl Carousel 1 -->
+		<div id="owl-carousel-1" class="owl-carousel owl-theme center-owl-nav owl-loaded owl-drag">
+           <!-- ARTICLE -->
+			
+			<!-- /ARTICLE --><!-- ARTICLE -->
+			
+			<!-- /ARTICLE --><!-- ARTICLE -->
+			
+			<!-- /ARTICLE -->		<div class="owl-stage-outer"><div class="owl-stage" style="transform: translate3d(-2137px, 0px, 0px); transition: all 0.25s ease 0s; width: 4988px;"><div class="owl-item cloned" style="width: 712.5px;"><article class="article thumb-article">
+				<div class="article-img">
+					<img src="img-lg-2.jpg" alt="">
+				</div>
+				<div class="article-body">
+					<ul class="article-info">
+						<li class="article-category"><a href="#">News</a></li>
+						<li class="article-type"><i class="fa fa-camera"></i></li>
+					</ul>
+					<h2 class="article-title"><a href="#">Samsung оценила смартфон Galaxy F02s с&nbsp;тройной камерой и чипом Snapdragon 450 всего в&nbsp;$120</a></h2>
+					<ul class="article-meta">
+						<li><i class="fa fa-clock-o"></i> 5. 4. 2021 </li>
+						<li><i class="fa fa-comments"></i> 610 </li>
+					</ul>
+				</div>
+			</article></div><div class="owl-item cloned" style="width: 712.5px;"><article class="article thumb-article">
+				<div class="article-img">
+					<img src="img-lg-3.jpg" alt="">
+				</div>
+				<div class="article-body">
+					<ul class="article-info">
+						<li class="article-category"><a href="#">News</a></li>
+						<li class="article-type"><i class="fa fa-camera"></i></li>
+					</ul>
+					<h2 class="article-title"><a href="#">LG прекратила производство смартфонов</a></h2>
+					<ul class="article-meta">
+						<li><i class="fa fa-clock-o"></i> 5. 4. 2021 </li>
+						<li><i class="fa fa-comments"></i> 916 </li>
+					</ul>
+				</div>
+			</article></div><div class="owl-item" style="width: 712.5px;"><article class="article thumb-article">
+				<div class="article-img">
+					<img src="img-lg-1.jpg" alt="">
+				</div>
+				<div class="article-body">
+					<ul class="article-info">
+						<li class="article-category"><a href="#">News</a></li>
+						<li class="article-type"><i class="fa fa-camera"></i></li>
+					</ul>
+					<h2 class="article-title"><a href="#">Смартфон IPhone 12 Pro впервые сравнили вживую с&nbsp;моделью iPhone 13 Pro</a></h2>
+					<ul class="article-meta">
+						<li><i class="fa fa-clock-o"></i> 5. 4. 2021 </li>
+						<li><i class="fa fa-comments"></i> 107 </li>
+					</ul>
+				</div>
+			</article></div><div class="owl-item active" style="width: 712.5px;"><article class="article thumb-article">
+				<div class="article-img">
+					<img src="img-lg-2.jpg" alt="">
+				</div>
+				<div class="article-body">
+					<ul class="article-info">
+						<li class="article-category"><a href="#">News</a></li>
+						<li class="article-type"><i class="fa fa-camera"></i></li>
+					</ul>
+					<h2 class="article-title"><a href="#">Samsung оценила смартфон Galaxy F02s с&nbsp;тройной камерой и чипом Snapdragon 450 всего в&nbsp;$120</a></h2>
+					<ul class="article-meta">
+						<li><i class="fa fa-clock-o"></i> 5. 4. 2021 </li>
+						<li><i class="fa fa-comments"></i> 610 </li>
+					</ul>
+				</div>
+			</article></div><div class="owl-item active" style="width: 712.5px;"><article class="article thumb-article">
+				<div class="article-img">
+					<img src="img-lg-3.jpg" alt="">
+				</div>
+				<div class="article-body">
+					<ul class="article-info">
+						<li class="article-category"><a href="#">News</a></li>
+						<li class="article-type"><i class="fa fa-camera"></i></li>
+					</ul>
+					<h2 class="article-title"><a href="#">LG прекратила производство смартфонов</a></h2>
+					<ul class="article-meta">
+						<li><i class="fa fa-clock-o"></i> 5. 4. 2021 </li>
+						<li><i class="fa fa-comments"></i> 916 </li>
+					</ul>
+				</div>
+			</article></div><div class="owl-item cloned" style="width: 712.5px;"><article class="article thumb-article">
+				<div class="article-img">
+					<img src="img-lg-1.jpg" alt="">
+				</div>
+				<div class="article-body">
+					<ul class="article-info">
+						<li class="article-category"><a href="#">News</a></li>
+						<li class="article-type"><i class="fa fa-camera"></i></li>
+					</ul>
+					<h2 class="article-title"><a href="#">Смартфон IPhone 12 Pro впервые сравнили вживую с&nbsp;моделью iPhone 13 Pro</a></h2>
+					<ul class="article-meta">
+						<li><i class="fa fa-clock-o"></i> 5. 4. 2021 </li>
+						<li><i class="fa fa-comments"></i> 107 </li>
+					</ul>
+				</div>
+			</article></div><div class="owl-item cloned" style="width: 712.5px;"><article class="article thumb-article">
+				<div class="article-img">
+					<img src="img-lg-2.jpg" alt="">
+				</div>
+				<div class="article-body">
+					<ul class="article-info">
+						<li class="article-category"><a href="#">News</a></li>
+						<li class="article-type"><i class="fa fa-camera"></i></li>
+					</ul>
+					<h2 class="article-title"><a href="#">Samsung оценила смартфон Galaxy F02s с&nbsp;тройной камерой и чипом Snapdragon 450 всего в&nbsp;$120</a></h2>
+					<ul class="article-meta">
+						<li><i class="fa fa-clock-o"></i> 5. 4. 2021 </li>
+						<li><i class="fa fa-comments"></i> 610 </li>
+					</ul>
+				</div>
+			</article></div></div></div><div class="owl-nav"><div class="owl-prev"><i class="fa fa-angle-left"></i></div><div class="owl-next"><i class="fa fa-angle-right"></i></div></div><div class="owl-dots disabled"></div></div>
+		<!-- /Owl Carousel 1 -->
+		
+		<!-- SECTION -->
+		<div class="section">
+			<!-- CONTAINER -->
+			<div class="container">
+				<!-- ROW -->
+				<div class="row">
+					<!-- Main Column -->
+					<div class="col-md-12">
+						<!-- section title -->
+						<div class="section-title">
+							<h2 class="title">Trending Posts</h2>
+							<!-- tab nav -->
+							<ul class="tab-nav pull-right">
+								<li class="active"><a data-toggle="tab" href="#tab1">All</a></li>
+								<li><a data-toggle="tab" href="#tab1">News</a></li>
+								<li><a data-toggle="tab" href="#tab1">Sport</a></li>
+								<li><a data-toggle="tab" href="#tab1">Music</a></li>
+								<li><a data-toggle="tab" href="#tab1">Business</a></li>
+								<li><a data-toggle="tab" href="#tab1">Lifestyle</a></li>
+							</ul>
+							<!-- /tab nav -->
+						</div>
+						<!-- /section title -->
+						
+						<!-- Tab content -->
+						<div class="tab-content">
+							<!-- tab1 -->
+							<div id="tab1" class="tab-pane fade in active">
+								<!-- row -->
+								<div class="row">
+									<!-- Column 1 -->
+		<div class="col-md-3 col-sm-6">
+			<!-- ARTICLE -->
+				<article class="article">
+					<div class="article-img">
+							<a href="#">
+								<img src="img-md-5.jpg" alt="">
+							</a>
+						<ul class="article-info">
+							<li class="article-type"><i class="fa fa-camera"></i></li>
+						</ul>
+						</div>
+				<div class="article-body">
+				<h4 class="article-title"><a href="#">Эксперты Macworld составили рейтинг худших устройств Apple в&nbsp;истории</a></h4>
+				<ul class="article-meta">
+					<li><i class="fa fa-clock-o"></i> 5. 4. 2021 </li>
+					<li><i class="fa fa-comments"></i> 330 </li>
+				</ul>
+			</div>
+		</article>
+			<!-- /ARTICLE -->
+			</div>
+		<!-- /Column 1 --><!-- Column 1 -->
+		<div class="col-md-3 col-sm-6">
+			<!-- ARTICLE -->
+				<article class="article">
+					<div class="article-img">
+							<a href="#">
+								<img src="img-md-6.jpg" alt="">
+							</a>
+						<ul class="article-info">
+							<li class="article-type"><i class="fa fa-camera"></i></li>
+						</ul>
+						</div>
+				<div class="article-body">
+				<h4 class="article-title"><a href="#">Genesis установила мировой рекорд с&nbsp;рекламной кампанией с&nbsp;использованием дрона 3.281</a></h4>
+				<ul class="article-meta">
+					<li><i class="fa fa-clock-o"></i> 5. 4. 2021 </li>
+					<li><i class="fa fa-comments"></i> 604 </li>
+				</ul>
+			</div>
+		</article>
+			<!-- /ARTICLE -->
+			</div>
+		<!-- /Column 1 --><!-- Column 1 -->
+		<div class="col-md-3 col-sm-6">
+			<!-- ARTICLE -->
+				<article class="article">
+					<div class="article-img">
+							<a href="#">
+								<img src="img-md-7.jpg" alt="">
+							</a>
+						<ul class="article-info">
+							<li class="article-type"><i class="fa fa-camera"></i></li>
+						</ul>
+						</div>
+				<div class="article-body">
+				<h4 class="article-title"><a href="#">Xiaomi представила компактную электронную книгу InkPalm 5</a></h4>
+				<ul class="article-meta">
+					<li><i class="fa fa-clock-o"></i> 5. 4. 2021 </li>
+					<li><i class="fa fa-comments"></i> 151 </li>
+				</ul>
+			</div>
+		</article>
+			<!-- /ARTICLE -->
+			</div>
+		<!-- /Column 1 --><!-- Column 1 -->
+		<div class="col-md-3 col-sm-6">
+			<!-- ARTICLE -->
+				<article class="article">
+					<div class="article-img">
+							<a href="#">
+								<img src="img-md-8.jpg" alt="">
+							</a>
+						<ul class="article-info">
+							<li class="article-type"><i class="fa fa-camera"></i></li>
+						</ul>
+						</div>
+				<div class="article-body">
+				<h4 class="article-title"><a href="#">Google выпустит первый смартфон Pixel 6 на&nbsp;базе собственного ARM процессора</a></h4>
+				<ul class="article-meta">
+					<li><i class="fa fa-clock-o"></i> 5. 4. 2021 </li>
+					<li><i class="fa fa-comments"></i> 476 </li>
+				</ul>
+			</div>
+		</article>
+			<!-- /ARTICLE -->
+			</div>
+		<!-- /Column 1 --><!-- Column 1 -->
+		<div class="col-md-3 col-sm-6">
+			<!-- ARTICLE -->
+				<article class="article">
+					<div class="article-img">
+							<a href="#">
+								<img src="img-md-9.jpg" alt="">
+							</a>
+						<ul class="article-info">
+							<li class="article-type"><i class="fa fa-camera"></i></li>
+						</ul>
+						</div>
+				<div class="article-body">
+				<h4 class="article-title"><a href="#">Представлен 200-Гц монитор MSI Optix MAG301RF</a></h4>
+				<ul class="article-meta">
+					<li><i class="fa fa-clock-o"></i> 5. 4. 2021 </li>
+					<li><i class="fa fa-comments"></i> 619 </li>
+				</ul>
+			</div>
+		</article>
+			<!-- /ARTICLE -->
+			</div>
+		<!-- /Column 1 --><!-- Column 1 -->
+		<div class="col-md-3 col-sm-6">
+			<!-- ARTICLE -->
+				<article class="article">
+					<div class="article-img">
+							<a href="#">
+								<img src="img-md-10.jpg" alt="">
+							</a>
+						<ul class="article-info">
+							<li class="article-type"><i class="fa fa-camera"></i></li>
+						</ul>
+						</div>
+				<div class="article-body">
+				<h4 class="article-title"><a href="#">Появились изображения iPhone 13&nbsp;и iPhone 13 Pro</a></h4>
+				<ul class="article-meta">
+					<li><i class="fa fa-clock-o"></i> 5. 4. 2021 </li>
+					<li><i class="fa fa-comments"></i> 854 </li>
+				</ul>
+			</div>
+		</article>
+			<!-- /ARTICLE -->
+			</div>
+		<!-- /Column 1 --><!-- Column 1 -->
+		<div class="col-md-3 col-sm-6">
+			<!-- ARTICLE -->
+				<article class="article">
+					<div class="article-img">
+							<a href="#">
+								<img src="img-md-11.jpg" alt="">
+							</a>
+						<ul class="article-info">
+							<li class="article-type"><i class="fa fa-camera"></i></li>
+						</ul>
+						</div>
+				<div class="article-body">
+				<h4 class="article-title"><a href="#">LG планирует выйти из&nbsp;телефонного бизнеса</a></h4>
+				<ul class="article-meta">
+					<li><i class="fa fa-clock-o"></i> 5. 4. 2021 </li>
+					<li><i class="fa fa-comments"></i> 821 </li>
+				</ul>
+			</div>
+		</article>
+			<!-- /ARTICLE -->
+			</div>
+		<!-- /Column 1 --><!-- Column 1 -->
+		<div class="col-md-3 col-sm-6">
+			<!-- ARTICLE -->
+				<article class="article">
+					<div class="article-img">
+							<a href="#">
+								<img src="img-md-12.jpg" alt="">
+							</a>
+						<ul class="article-info">
+							<li class="article-type"><i class="fa fa-camera"></i></li>
+						</ul>
+						</div>
+				<div class="article-body">
+				<h4 class="article-title"><a href="#">Новый игровой смартфон Lenovo Legion 2 Pro получит 6,92-дюймовый 144&nbsp;Гц AMOLED E4 дисплей</a></h4>
+				<ul class="article-meta">
+					<li><i class="fa fa-clock-o"></i> 5. 4. 2021 </li>
+					<li><i class="fa fa-comments"></i> 881 </li>
+				</ul>
+			</div>
+		</article>
+			<!-- /ARTICLE -->
+			</div>
+		<!-- /Column 1 --><!-- Column 1 -->
+		<div class="col-md-3 col-sm-6">
+			<!-- ARTICLE -->
+				<article class="article">
+					<div class="article-img">
+							<a href="#">
+								<img src="img-md-13.jpg" alt="">
+							</a>
+						<ul class="article-info">
+							<li class="article-type"><i class="fa fa-camera"></i></li>
+						</ul>
+						</div>
+				<div class="article-body">
+				<h4 class="article-title"><a href="#">Новый планшет Xiaomi Mi Pad 5 получит процессор от&nbsp;Qualcomm Snapdragon 800-й серии</a></h4>
+				<ul class="article-meta">
+					<li><i class="fa fa-clock-o"></i> 5. 4. 2021 </li>
+					<li><i class="fa fa-comments"></i> 209 </li>
+				</ul>
+			</div>
+		</article>
+			<!-- /ARTICLE -->
+			</div>
+		<!-- /Column 1 --><!-- Column 1 -->
+		<div class="col-md-3 col-sm-6">
+			<!-- ARTICLE -->
+				<article class="article">
+					<div class="article-img">
+							<a href="#">
+								<img src="img-md-14.jpg" alt="">
+							</a>
+						<ul class="article-info">
+							<li class="article-type"><i class="fa fa-camera"></i></li>
+						</ul>
+						</div>
+				<div class="article-body">
+				<h4 class="article-title"><a href="#">Правительство РФ обязало устанавливать на&nbsp;смартфоны 16 видов российских приложений</a></h4>
+				<ul class="article-meta">
+					<li><i class="fa fa-clock-o"></i> 5. 4. 2021 </li>
+					<li><i class="fa fa-comments"></i> 799 </li>
+				</ul>
+			</div>
+		</article>
+			<!-- /ARTICLE -->
+			</div>
+		<!-- /Column 1 --><!-- Column 1 -->
+		<div class="col-md-3 col-sm-6">
+			<!-- ARTICLE -->
+				<article class="article">
+					<div class="article-img">
+							<a href="#">
+								<img src="img-md-15.jpg" alt="">
+							</a>
+						<ul class="article-info">
+							<li class="article-type"><i class="fa fa-camera"></i></li>
+						</ul>
+						</div>
+				<div class="article-body">
+				<h4 class="article-title"><a href="#">Старую видеокарту NVIDIA вернули в&nbsp;продажу по&nbsp;завышенной вдвое цене</a></h4>
+				<ul class="article-meta">
+					<li><i class="fa fa-clock-o"></i> 5. 4. 2021 </li>
+					<li><i class="fa fa-comments"></i> 182 </li>
+				</ul>
+			</div>
+		</article>
+			<!-- /ARTICLE -->
+			</div>
+		<!-- /Column 1 -->								</div>
+								<!-- /row -->
+								
+								<!-- row -->
+
+								<!-- /row -->
+							</div>
+							<!-- /tab1 -->
+						</div>
+						<!-- /tab content -->
+					</div>
+					<!-- /Main Column -->
+				</div>
+				<!-- /ROW -->
+			</div>
+			<!-- /CONTAINER -->
+		</div>
+		<!-- /SECTION -->
+		
+		<!-- SECTION -->
+
+		<!-- /SECTION -->
+		
+		<!-- AD SECTION -->
+		<div class="visible-lg visible-md">
+			<img class="center-block" src="ad-3.jpg" alt="">
+		</div>
+		<!-- /AD SECTION -->
+		
+
+		
+		<!-- SECTION -->
+		<div class="section">
+			<!-- CONTAINER -->
+			<div class="container">
+				<!-- ROW -->
+				<div class="row">
+					<!-- Main Column -->
+					<div class="col-md-8">
+						<!-- section title -->
+						<div class="section-title">
+							<h2 class="title">Popular Posts</h2>
+						</div>
+						<!-- /section title -->
+						
+						<!-- ARTICLE -->
+						<article class="article row-article">
+							<div class="article-img">
+								<a href="#">
+									<img src="img-md-16.jpg" alt="">
+								</a>
+							</div>
+							<div class="article-body">
+								<ul class="article-info">
+									<li class="article-category"><a href="#">News</a></li>
+									<li class="article-type"><i class="fa fa-file-text"></i></li>
+								</ul>
+								<h3 class="article-title"><a href="#">Представлен компактный дрон FIMI X8 Mini</a></h3>
+								<ul class="article-meta">
+									<li><i class="fa fa-clock-o"></i> 5. 4. 2021</li>
+									<li><i class="fa fa-comments"></i> 215</li>
+								</ul>
+								<p>Компания FIMI, принадлежащая Xiaomi, представила новый компактный дрон под названием FIMI X8 Mini. Он позиционируется как главный конкурент популярного коптера DJI Mini от другой китайской компании. В разложенном виде габариты дрона составляют 200 x 145 x 56 мм, а в сложенном - 165 x 89 x 47 мм.</p>
+							</div>
+						</article><article class="article row-article">
+							<div class="article-img">
+								<a href="#">
+									<img src="img-md-17.jpg" alt="">
+								</a>
+							</div>
+							<div class="article-body">
+								<ul class="article-info">
+									<li class="article-category"><a href="#">News</a></li>
+									<li class="article-type"><i class="fa fa-file-text"></i></li>
+								</ul>
+								<h3 class="article-title"><a href="#">В&nbsp;Apple предложили метод защиты складных дисплеев в&nbsp;месте сгиба</a></h3>
+								<ul class="article-meta">
+									<li><i class="fa fa-clock-o"></i> 5. 4. 2021</li>
+									<li><i class="fa fa-comments"></i> 341</li>
+								</ul>
+								<p>Патент на защиту складных дисплеев в месте сгиба от трещин зарегистрировала компания Apple, об этом 4 апреля сообщается на сайте ixbt.com. Изобретение предназначено для предотвращения растрескивания экрана на месте сгиба.</p>
+							</div>
+						</article><article class="article row-article">
+							<div class="article-img">
+								<a href="#">
+									<img src="img-md-18.jpg" alt="">
+								</a>
+							</div>
+							<div class="article-body">
+								<ul class="article-info">
+									<li class="article-category"><a href="#">News</a></li>
+									<li class="article-type"><i class="fa fa-file-text"></i></li>
+								</ul>
+								<h3 class="article-title"><a href="#">OPPO A74 5G получит батарею на&nbsp;5000 мАч</a></h3>
+								<ul class="article-meta">
+									<li><i class="fa fa-clock-o"></i> 5. 4. 2021</li>
+									<li><i class="fa fa-comments"></i> 456</li>
+								</ul>
+								<p>Ориентировочная цена смартфона составит 340 долларов.</p>
+							</div>
+						</article><article class="article row-article">
+							<div class="article-img">
+								<a href="#">
+									<img src="img-md-19.jpg" alt="">
+								</a>
+							</div>
+							<div class="article-body">
+								<ul class="article-info">
+									<li class="article-category"><a href="#">News</a></li>
+									<li class="article-type"><i class="fa fa-file-text"></i></li>
+								</ul>
+								<h3 class="article-title"><a href="#">В&nbsp;Apple готовят новый моноблок iMac с&nbsp;огромным дисплеем</a></h3>
+								<ul class="article-meta">
+									<li><i class="fa fa-clock-o"></i> 5. 4. 2021</li>
+									<li><i class="fa fa-comments"></i> 459</li>
+								</ul>
+								<p>Источник написал, что Apple откажется от 27-дюймовой версии iMac и вместо нее выпустит более крупный моноблок. Предположительно это будет версия с 32 дюймовой панелью.</p>
+							</div>
+						</article>						<!-- /ARTICLE -->
+						
+						<!-- pagination -->
+						<div class="article-pagination">
+							<ul> 
+								<li class="active"><a href="#" class="active">1</a></li>
+								<li><a href="#">2</a></li>
+								<li><a href="#">3</a></li>
+								<li><a href="#"><i class="fa fa-angle-right"></i></a></li>
+							</ul>
+						</div>
+						<!-- /pagination -->
+					</div>
+					<!-- /Main Column -->
+					
+					<!-- Aside Column -->
+					<!-- /Aside Column -->
+				</div>
+				<!-- /ROW -->
+			</div>
+			<!-- /CONTAINER -->
+		</div>
+		<!-- /SECTION -->
+		
+		<!-- FOOTER -->
+		<footer id="footer">
+			<!-- Top Footer -->
+			<div id="top-footer" class="section">
+				<!-- CONTAINER -->
+				<div class="container">
+					<!-- ROW -->
+					<div class="row">
+						<!-- Column 1 -->
+						<div class="col-md-4">
+							<!-- footer about -->
+							<div class="footer-widget about-widget">
+								<div class="footer-logo">
+									<a href="#" class="logo"><img src="logo-alt.png" alt=""></a>
+									<p>Популярный новостной портал.</p>
+								</div>
+							</div>
+							<!-- /footer about -->
+							
+							<!-- footer social -->
+							<div class="footer-widget social-widget">
+								<div class="widget-title">
+									<h3 class="title">Follow Us</h3>
+								</div>
+								<ul>
+									<li><a href="#" class="facebook"><i class="fa fa-facebook"></i></a></li>
+									<li><a href="#" class="twitter"><i class="fa fa-twitter"></i></a></li>
+									<li><a href="#" class="google"><i class="fa fa-google"></i></a></li>
+									<li><a href="#" class="instagram"><i class="fa fa-instagram"></i></a></li>
+									<li><a href="#" class="youtube"><i class="fa fa-youtube"></i></a></li>
+									<li><a href="#" class="rss"><i class="fa fa-rss"></i></a></li>
+								</ul>
+							</div>
+							<!-- /footer social -->
+							
+							<!-- footer subscribe -->
+							<div class="footer-widget subscribe-widget">
+								<div class="widget-title">
+									<h2 class="title">Подпишись на рассылку</h2>
+								</div>
+								<form>
+									<input class="input" type="email" placeholder="Enter Your Email" value="">
+									<button class="input-btn">Подписаться</button>
+								</form>
+							</div>
+							<!-- /footer subscribe -->
+						</div>
+						<!-- /Column 1 -->
+						
+						<!-- Column 2 -->
+
+						<!-- /Column 2 -->
+						
+						<!-- Column 3 -->
+						<div class="col-md-4">
+							<!-- footer galery -->
+							<div class="footer-widget galery-widget">
+								<div class="widget-title">
+									<h2 class="title">Flickr Photos</h2>
+								</div>
+								<ul>
+									<li><a href="#"><img src="img-widget-3.jpg" alt=""></a></li>
+									<li><a href="#"><img src="img-widget-4.jpg" alt=""></a></li>
+									<li><a href="#"><img src="img-widget-5.jpg" alt=""></a></li>
+									<li><a href="#"><img src="img-widget-6.jpg" alt=""></a></li>
+									<li><a href="#"><img src="img-widget-7.jpg" alt=""></a></li>
+									<li><a href="#"><img src="img-widget-8.jpg" alt=""></a></li>
+									<li><a href="#"><img src="img-widget-9.jpg" alt=""></a></li>
+									<li><a href="#"><img src="img-widget-10.jpg" alt=""></a></li>
+								</ul>
+							</div>
+							<!-- /footer galery -->
+							
+
+						</div>
+						<!-- /Column 3 -->
+					</div>
+					<!-- /ROW -->
+				</div>
+				<!-- /CONTAINER -->
+			</div>
+			<!-- /Top Footer -->
+			
+			<!-- Bottom Footer -->
+			<div id="bottom-footer" class="section">
+				<!-- CONTAINER -->
+				<div class="container">
+					<!-- ROW -->
+					<div class="row">
+						<!-- footer links -->
+						<div class="col-md-6 col-md-push-6">
+							<ul class="footer-links">
+								<li><a href="#">About us</a></li>
+								<li><a href="#">Contact</a></li>
+								<li><a href="#">Advertisement</a></li>
+								<li><a href="#">Privacy</a></li>
+							</ul>
+						</div>
+						<!-- /footer links -->
+						
+						<!-- footer copyright -->
+						<div class="col-md-6 col-md-pull-6">
+							<div class="footer-copyright">
+								<span>
+Copyright ©<script>document.write(new Date().getFullYear());</script>2021 All rights reserved | This is made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://vk.com/bearded_cpa" target="_blank">Бородатый арбитраж (с)</a></span>
+							</div>
+						</div>
+						<!-- /footer copyright -->
+					</div>
+					<!-- /ROW -->
+				</div>
+				<!-- /CONTAINER -->
+			</div>
+			<!-- /Bottom Footer -->
+		</footer>
+		<!-- /FOOTER -->
+		
+		<!-- Back to top -->
+		<div id="back-to-top"></div>
+		<!-- Back to top -->
+		
+		<!-- jQuery Plugins -->
+		<script src="jquery.min.js"></script>
+		<script src="bootstrap.min.js"></script>
+		<script src="owl.carousel.min.js"></script>
+		<script src="main.js"></script>
+
+	
+
+</body></html>
